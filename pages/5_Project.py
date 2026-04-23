@@ -4,12 +4,42 @@ from sidebar import inject_plexus_bg, get_base64_image
 st.set_page_config(page_title="Projects", layout="wide", initial_sidebar_state="collapsed")
 inject_plexus_bg()
 
+# ─────────────────────────────────────────────────────────────
+# SVG ICON HELPER - All icons inline, no CDN dependency
+# ─────────────────────────────────────────────────────────────
+def svg_icon(name: str, size: int = 20) -> str:
+    icons = {
+        "code-box": '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l4-4 4 4"/><path d="M12 8v8"/>',
+        "rocket": '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+        "folder-open": '<path d="M6 14l1-4h10l1 4"/><path d="M20 12H8l-2-6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/>',
+        "stack": '<path d="m12 2-8.5 5v10L12 22l8.5-5V7z"/><path d="M12 22V12"/><path d="m20.5 7-8.5 5-8.5-5"/><path d="m20.5 12-8.5 5-8.5-5"/>',
+        "git-branch": '<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+        "star": '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+        "apps": '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+        "robot": '<rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/>',
+        "globe": '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+        "pie-chart": '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+        "book-open": '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+        "check": '<polyline points="20 6 9 17 4 12"/>',
+        "time": '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        "git-commit": '<circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/>',
+        "eye": '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+        "close": '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+        "tag": '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+        "bar-chart": '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+        "calendar": '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+        "arrow-up": '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
+        "github": '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
+        "check-double": '<polyline points="18 6 9 17 4 12"/><polyline points="22 6 13 17"/>',
+    }
+    path = icons.get(name, icons["code-box"])
+    return f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{path}</svg>'
+
 st.markdown("""
 <style>
 /* Show sidebar toggle button */
 [data-testid="stSidebarCollapsedControl"] { visibility: visible !important; }
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-@import url('https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -35,11 +65,11 @@ footer { visibility: hidden; }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
     color: white;
     box-shadow: 0 8px 25px rgba(56,189,248,0.3);
     flex-shrink: 0;
 }
+.section-icon svg { width: 24px; height: 24px; }
 .section-title {
     display: inline-block;
     color: #f8fafc;
@@ -69,7 +99,7 @@ footer { visibility: hidden; }
     justify-content: center;
     gap: 8px;
 }
-.subtitle-text i { color: #38bdf8; font-size: 1rem; }
+.subtitle-text svg { width: 18px; height: 18px; color: #38bdf8; }
 .subtitle-divider {
     width: 60px; height: 3px;
     background: linear-gradient(90deg, #38bdf8, #6366f1);
@@ -99,8 +129,9 @@ footer { visibility: hidden; }
 .stat-icon-wrap {
     width: 40px; height: 40px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 10px; font-size: 1.1rem;
+    margin: 0 auto 10px;
 }
+.stat-icon-wrap svg { width: 20px; height: 20px; }
 .stat-icon-wrap.blue { background: rgba(56,189,248,0.12); color: #38bdf8; }
 .stat-icon-wrap.purple { background: rgba(99,102,241,0.12); color: #818cf8; }
 .stat-icon-wrap.emerald { background: rgba(52,211,153,0.12); color: #34d399; }
@@ -131,7 +162,7 @@ footer { visibility: hidden; }
     display: inline-flex; align-items: center; gap: 6px;
     backdrop-filter: blur(10px);
 }
-.filter-btn i { font-size: 0.95rem; opacity: 0.7; }
+.filter-btn svg { width: 16px; height: 16px; opacity: 0.7; }
 .filter-btn:hover {
     background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.25);
     color: #cbd5e1; transform: translateY(-2px);
@@ -141,6 +172,7 @@ footer { visibility: hidden; }
     border-color: rgba(56,189,248,0.4); color: #38bdf8;
     box-shadow: 0 4px 20px rgba(56,189,248,0.15);
 }
+.filter-btn.active svg { opacity: 1; }
 
 .project-gallery {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -189,7 +221,7 @@ footer { visibility: hidden; }
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);
 }
-.overlay-icon-wrap i { font-size: 1.4rem; color: white; }
+.overlay-icon-wrap svg { width: 24px; height: 24px; color: white; }
 .overlay-text {
     color: white; font-size: clamp(0.7rem, 2vw, 0.82rem); font-weight: 600;
     font-family: 'Inter', sans-serif; letter-spacing: 2px; text-transform: uppercase;
@@ -204,6 +236,7 @@ footer { visibility: hidden; }
     text-transform: uppercase; border: 1px solid rgba(52,211,153,0.2);
     z-index: 2; display: flex; align-items: center; gap: 4px;
 }
+.project-badge svg { width: 14px; height: 14px; }
 
 .project-info { padding: clamp(16px, 3vw, 22px); color: #f8fafc; font-family: 'Inter', sans-serif; }
 .project-info h3 {
@@ -219,7 +252,7 @@ footer { visibility: hidden; }
     color: #64748b; font-size: clamp(0.72rem, 1.8vw, 0.82rem); font-weight: 500;
 }
 .project-meta-left span { display: inline-flex; align-items: center; gap: 5px; }
-.project-meta-left i { font-size: 0.85rem; color: #475569; }
+.project-meta-left svg { width: 14px; height: 14px; color: #475569; }
 
 .project-category-tag {
     display: inline-flex; align-items: center; gap: 4px;
@@ -228,6 +261,7 @@ footer { visibility: hidden; }
     padding: 3px 10px; font-size: 0.7rem; font-weight: 600;
     font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
 }
+.project-category-tag svg { width: 12px; height: 12px; }
 
 .skill-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .skill-chip {
@@ -292,9 +326,9 @@ footer { visibility: hidden; }
 }
 
 .modal-close {
-    position: sticky;
-    top: 0;
-    float: right;
+    position: absolute;
+    top: 16px;
+    right: 18px;
     background: rgba(239,68,68,0.12);
     border: 1px solid rgba(239,68,68,0.2);
     color: #f87171;
@@ -303,12 +337,10 @@ footer { visibility: hidden; }
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 1.2rem;
-    margin-bottom: 12px;
-    margin-left: auto;
     z-index: 10;
     flex-shrink: 0;
 }
+.modal-close svg { width: 18px; height: 18px; }
 .modal-close:hover {
     background: rgba(239,68,68,0.25);
     border-color: rgba(239,68,68,0.5);
@@ -347,6 +379,7 @@ footer { visibility: hidden; }
     padding: 4px 12px; border-radius: 8px;
     border: 1px solid rgba(52,211,153,0.2);
 }
+.modal-verified svg { width: 14px; height: 14px; }
 
 .modal-title {
     color: #f1f5f9;
@@ -372,6 +405,7 @@ footer { visibility: hidden; }
     padding: 5px 14px; font-size: 0.78rem; font-weight: 600;
     display: inline-flex; align-items: center; gap: 5px;
 }
+.modal-tag svg { width: 14px; height: 14px; opacity: 0.8; }
 
 .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
 .modal-detail-item {
@@ -381,8 +415,9 @@ footer { visibility: hidden; }
 .modal-detail-icon {
     width: 34px; height: 34px; border-radius: 9px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem; flex-shrink: 0;
+    flex-shrink: 0;
 }
+.modal-detail-icon svg { width: 16px; height: 16px; }
 .modal-detail-icon.blue { background: rgba(56,189,248,0.12); color: #38bdf8; }
 .modal-detail-icon.purple { background: rgba(99,102,241,0.12); color: #818cf8; }
 .modal-detail-icon.emerald { background: rgba(52,211,153,0.12); color: #34d399; }
@@ -398,6 +433,7 @@ footer { visibility: hidden; }
     border: none; cursor: pointer; transition: all 0.3s ease;
     width: 100%; font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
 }
+.modal-btn svg { width: 18px; height: 18px; }
 .modal-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 35px rgba(56,189,248,0.4);
@@ -421,10 +457,11 @@ footer { visibility: hidden; }
     background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px);
     color: #38bdf8; width: 48px; height: 48px; border-radius: 14px;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
-    font-size: 1.2rem; border: 1px solid rgba(56,189,248,0.2);
+    border: 1px solid rgba(56,189,248,0.2);
     opacity: 0; transition: all 0.3s ease; z-index: 1000;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
+.scroll-top svg { width: 20px; height: 20px; }
 .scroll-top.visible { opacity: 1; }
 .scroll-top:hover { transform: translateY(-3px); border-color: #38bdf8; }
 
@@ -491,14 +528,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Heading ──
-st.markdown("""
+st.markdown(f"""
 <div class="typing-wrapper">
     <div class="section-title-container">
-        <div class="section-icon"><i class="ri-code-box-line"></i></div>
+        <div class="section-icon">{svg_icon("code-box", 24)}</div>
         <div class="section-title">Featured Projects</div>
     </div>
     <p class="subtitle-text">
-        <i class="ri-rocket-line"></i>
+        {svg_icon("rocket", 18)}
         Innovative solutions built with modern technologies
     </p>
     <div class="subtitle-divider"></div>
@@ -506,25 +543,25 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Stats ──
-st.markdown("""
+st.markdown(f"""
 <div class="stats-bar">
     <div class="stat-item">
-        <div class="stat-icon-wrap blue"><i class="ri-folder-open-line"></i></div>
+        <div class="stat-icon-wrap blue">{svg_icon("folder-open", 20)}</div>
         <span class="stat-number" id="cnt-projects">0</span>
         <span class="stat-label">Projects</span>
     </div>
     <div class="stat-item">
-        <div class="stat-icon-wrap purple"><i class="ri-stack-line"></i></div>
+        <div class="stat-icon-wrap purple">{svg_icon("stack", 20)}</div>
         <span class="stat-number" id="cnt-tech">0</span>
         <span class="stat-label">Technologies</span>
     </div>
     <div class="stat-item">
-        <div class="stat-icon-wrap emerald"><i class="ri-git-branch-line"></i></div>
+        <div class="stat-icon-wrap emerald">{svg_icon("git-branch", 20)}</div>
         <span class="stat-number" id="cnt-commits">0</span>
         <span class="stat-label">Commits</span>
     </div>
     <div class="stat-item">
-        <div class="stat-icon-wrap amber"><i class="ri-star-line"></i></div>
+        <div class="stat-icon-wrap amber">{svg_icon("star", 20)}</div>
         <span class="stat-number" id="cnt-stars">0</span>
         <span class="stat-label">GitHub Stars</span>
     </div>
@@ -532,22 +569,22 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Filter Buttons ──
-st.markdown("""
+st.markdown(f"""
 <div class="filter-section">
     <button class="filter-btn active" onclick="filterProjects('all', this)">
-        <i class="ri-apps-line"></i> All
+        {svg_icon("apps", 16)} All
     </button>
     <button class="filter-btn" onclick="filterProjects('AI/ML', this)">
-        <i class="ri-robot-line"></i> AI/ML
+        {svg_icon("robot", 16)} AI/ML
     </button>
     <button class="filter-btn" onclick="filterProjects('Web App', this)">
-        <i class="ri-global-line"></i> Web App
+        {svg_icon("globe", 16)} Web App
     </button>
     <button class="filter-btn" onclick="filterProjects('Data', this)">
-        <i class="ri-pie-chart-line"></i> Data
+        {svg_icon("pie-chart", 16)} Data
     </button>
     <button class="filter-btn" onclick="filterProjects('Education', this)">
-        <i class="ri-book-open-line"></i> Education
+        {svg_icon("book-open", 16)} Education
     </button>
 </div>
 """, unsafe_allow_html=True)
@@ -555,11 +592,18 @@ st.markdown("""
 # ── Gallery + Modals ──
 st.markdown('<div class="project-gallery" id="projectGallery">', unsafe_allow_html=True)
 
+cat_icons = {
+    "AI/ML": "robot",
+    "Web App": "globe", 
+    "Data": "pie-chart",
+    "Education": "book-open"
+}
+
 for i, (path, d) in enumerate(zip(projects, data)):
     b64 = get_base64_image(path)
     if b64:
         tags_html = "".join(
-            f'<span class="modal-tag"><i class="ri-price-tag-3-line"></i> {t}</span>'
+            f'<span class="modal-tag">{svg_icon("tag", 14)}{t}</span>'
             for t in d['tags']
         )
         skill_chips = "".join(
@@ -568,25 +612,18 @@ for i, (path, d) in enumerate(zip(projects, data)):
         )
         complexity = d.get('complexity', 85)
         category = d.get('category', 'General')
-
-        cat_icons = {
-            "AI/ML": "ri-robot-line",
-            "Web App": "ri-global-line",
-            "Data": "ri-pie-chart-line",
-            "Education": "ri-book-open-line"
-        }
-        cat_icon = cat_icons.get(category, "ri-code-box-line")
+        cat_icon = cat_icons.get(category, "code-box")
 
         st.markdown(f"""
         <!-- Project Card -->
         <div class="project-item" data-category="{category}" data-index="{i}"
              onclick="openModal({i})" style="--progress:{complexity}%;">
-            <span class="project-badge"><i class="ri-check-line"></i> Completed</span>
+            <span class="project-badge">{svg_icon("check", 14)} Completed</span>
             <div class="project-img-wrapper">
                 <img src="{b64}" class="project-img" alt="{d['name']}" loading="lazy">
                 <div class="project-overlay">
                     <div class="overlay-icon-wrap">
-                        <i class="ri-eye-line"></i>
+                        {svg_icon("eye", 24)}
                     </div>
                     <span class="overlay-text">View Details</span>
                 </div>
@@ -595,11 +632,11 @@ for i, (path, d) in enumerate(zip(projects, data)):
                 <h3>{d['name']}</h3>
                 <div class="project-meta">
                     <div class="project-meta-left">
-                        <span><i class="ri-time-line"></i> 2024</span>
-                        <span><i class="ri-git-commit-line"></i> Active</span>
+                        <span>{svg_icon("time", 14)} 2024</span>
+                        <span>{svg_icon("git-commit", 14)} Active</span>
                     </div>
                     <span class="project-category-tag">
-                        <i class="{cat_icon}"></i> {category}
+                        {svg_icon(cat_icon, 12)} {category}
                     </span>
                 </div>
                 <div class="skill-chips">{skill_chips}</div>
@@ -623,7 +660,7 @@ for i, (path, d) in enumerate(zip(projects, data)):
     b64 = get_base64_image(path)
     if b64:
         tags_html = "".join(
-            f'<span class="modal-tag"><i class="ri-price-tag-3-line"></i> {t}</span>'
+            f'<span class="modal-tag">{svg_icon("tag", 14)}{t}</span>'
             for t in d['tags']
         )
         complexity = d.get('complexity', 85)
@@ -631,9 +668,9 @@ for i, (path, d) in enumerate(zip(projects, data)):
 
         st.markdown(f"""
         <div class="modal-overlay" id="modal{i}">
-            <div class="modal-box" id="modal-box-{i}">
+            <div class="modal-box" id="modal-box-{i}" onclick="event.stopPropagation()">
                 <button class="modal-close" onclick="closeModal({i})">
-                    <i class="ri-close-line"></i>
+                    {svg_icon("close", 18)}
                 </button>
 
                 <div class="modal-img-container">
@@ -642,7 +679,7 @@ for i, (path, d) in enumerate(zip(projects, data)):
 
                 <div class="modal-header">
                     <span class="modal-verified">
-                        <i class="ri-check-double-line"></i> Production Ready
+                        {svg_icon("check-double", 14)} Production Ready
                     </span>
                 </div>
 
@@ -654,28 +691,28 @@ for i, (path, d) in enumerate(zip(projects, data)):
 
                 <div class="modal-detail-grid">
                     <div class="modal-detail-item">
-                        <div class="modal-detail-icon blue"><i class="ri-git-branch-line"></i></div>
+                        <div class="modal-detail-icon blue">{svg_icon("git-branch", 16)}</div>
                         <div>
                             <span class="modal-detail-text">Status</span>
                             <span class="modal-detail-value">Completed</span>
                         </div>
                     </div>
                     <div class="modal-detail-item">
-                        <div class="modal-detail-icon purple"><i class="ri-calendar-line"></i></div>
+                        <div class="modal-detail-icon purple">{svg_icon("calendar", 16)}</div>
                         <div>
                             <span class="modal-detail-text">Year</span>
                             <span class="modal-detail-value">2024</span>
                         </div>
                     </div>
                     <div class="modal-detail-item">
-                        <div class="modal-detail-icon emerald"><i class="ri-price-tag-3-line"></i></div>
+                        <div class="modal-detail-icon emerald">{svg_icon("tag", 16)}</div>
                         <div>
                             <span class="modal-detail-text">Category</span>
                             <span class="modal-detail-value">{category}</span>
                         </div>
                     </div>
                     <div class="modal-detail-item">
-                        <div class="modal-detail-icon amber"><i class="ri-bar-chart-fill"></i></div>
+                        <div class="modal-detail-icon amber">{svg_icon("bar-chart", 16)}</div>
                         <div>
                             <span class="modal-detail-text">Complexity</span>
                             <span class="modal-detail-value">{complexity}%</span>
@@ -684,7 +721,7 @@ for i, (path, d) in enumerate(zip(projects, data)):
                 </div>
 
                 <button class="modal-btn" onclick="window.open('https://github.com', '_blank')">
-                    <i class="ri-github-fill"></i>
+                    {svg_icon("github", 18)}
                     View Source Code
                 </button>
             </div>
@@ -692,10 +729,10 @@ for i, (path, d) in enumerate(zip(projects, data)):
         """, unsafe_allow_html=True)
 
 # ── Scroll to Top ──
-st.markdown("""
+st.markdown(f"""
 <button class="scroll-top" id="scrollTopBtn"
-    onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <i class="ri-arrow-up-s-line"></i>
+    onclick="window.scrollTo({{top:0,behavior:'smooth'}})">
+    {svg_icon("arrow-up", 20)}
 </button>
 """, unsafe_allow_html=True)
 
@@ -743,21 +780,28 @@ st.markdown("""
         document.querySelectorAll('.modal-overlay.open').forEach(function(m) {
             m.classList.remove('open');
         });
-        modal.classList.add('open');
+        // Force display then add class for animation
+        modal.style.display = 'flex';
+        setTimeout(function() {
+            modal.classList.add('open');
+        }, 10);
         document.body.style.overflow = 'hidden';
         
-        // Animate progress bar inside modal if needed
-        modal.addEventListener('click', function(e) {
+        // Close on overlay click
+        modal.onclick = function(e) {
             if (e.target === modal) {
                 closeModal(i);
             }
-        });
+        };
     };
 
     window.closeModal = function(i) {
         const modal = document.getElementById('modal' + i);
         if (modal) {
             modal.classList.remove('open');
+            setTimeout(function() {
+                modal.style.display = 'none';
+            }, 300);
             document.body.style.overflow = '';
         }
     };
@@ -767,6 +811,9 @@ st.markdown("""
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal-overlay.open').forEach(function(m) {
                 m.classList.remove('open');
+                setTimeout(function() {
+                    m.style.display = 'none';
+                }, 300);
             });
             document.body.style.overflow = '';
         }

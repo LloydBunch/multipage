@@ -4,12 +4,37 @@ from sidebar import inject_plexus_bg, get_base64_image
 st.set_page_config(page_title="Certificates", layout="wide", initial_sidebar_state="collapsed")
 inject_plexus_bg()
 
+# SVG Icon Helper
+def svg_icon(name: str, size: int = 20) -> str:
+    icons = {
+        "award": '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
+        "verified": '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+        "building": '<rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>',
+        "calendar": '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+        "code": '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+        "globe": '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+        "cloud": '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>',
+        "palette": '<circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/>',
+        "eye": '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+        "close": '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+        "download": '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+        "check": '<polyline points="20 6 9 17 4 12"/>',
+        "tag": '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+        "chart": '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+        "apps": '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+        "arrow-up": '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
+        "shield": '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+        "lightbulb": '<path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"/>',
+        "time": '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    }
+    path = icons.get(name, icons["code"])
+    return f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{path}</svg>'
+
 st.markdown("""
 <style>
 /* Show sidebar toggle button */
 [data-testid="stSidebarCollapsedControl"] { visibility: visible !important; }
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-@import url('https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -37,11 +62,11 @@ footer { visibility: hidden; }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
     color: white;
     box-shadow: 0 8px 25px rgba(56,189,248,0.3);
     flex-shrink: 0;
 }
+.section-icon svg { width: 24px; height: 24px; }
 .section-title {
     display: inline-block;
     color: #f8fafc;
@@ -76,9 +101,10 @@ footer { visibility: hidden; }
     justify-content: center;
     gap: 8px;
 }
-.subtitle-text i {
+.subtitle-text svg {
+    width: 18px;
+    height: 18px;
     color: #38bdf8;
-    font-size: 1rem;
 }
 .subtitle-divider {
     width: 60px;
@@ -135,8 +161,8 @@ footer { visibility: hidden; }
     align-items: center;
     justify-content: center;
     margin: 0 auto 10px;
-    font-size: 1.1rem;
 }
+.stat-icon-wrap svg { width: 20px; height: 20px; }
 .stat-icon-wrap.blue { background: rgba(56,189,248,0.12); color: #38bdf8; }
 .stat-icon-wrap.purple { background: rgba(99,102,241,0.12); color: #818cf8; }
 .stat-icon-wrap.emerald { background: rgba(52,211,153,0.12); color: #34d399; }
@@ -195,8 +221,9 @@ footer { visibility: hidden; }
     gap: 6px;
     backdrop-filter: blur(10px);
 }
-.filter-btn i {
-    font-size: 0.95rem;
+.filter-btn svg {
+    width: 16px;
+    height: 16px;
     opacity: 0.7;
 }
 .filter-btn:hover {
@@ -211,7 +238,7 @@ footer { visibility: hidden; }
     color: #38bdf8;
     box-shadow: 0 4px 20px rgba(56,189,248,0.15);
 }
-.filter-btn.active i {
+.filter-btn.active svg {
     opacity: 1;
 }
 
@@ -320,8 +347,9 @@ footer { visibility: hidden; }
     border: 1px solid rgba(255,255,255,0.3);
     animation: pulseIcon 2s ease infinite;
 }
-.overlay-icon-wrap i {
-    font-size: 1.4rem;
+.overlay-icon-wrap svg {
+    width: 24px;
+    height: 24px;
     color: white;
 }
 .overlay-text {
@@ -358,8 +386,9 @@ footer { visibility: hidden; }
     align-items: center;
     gap: 4px;
 }
-.cert-badge i {
-    font-size: 0.72rem;
+.cert-badge svg {
+    width: 14px;
+    height: 14px;
 }
 
 /* ─── Card Info ─── */
@@ -397,8 +426,9 @@ footer { visibility: hidden; }
     align-items: center;
     gap: 5px;
 }
-.cert-meta-left i {
-    font-size: 0.85rem;
+.cert-meta-left svg {
+    width: 14px;
+    height: 14px;
     color: #475569;
 }
 .cert-category-tag {
@@ -414,6 +444,10 @@ footer { visibility: hidden; }
     font-weight: 600;
     font-family: 'Inter', sans-serif;
     letter-spacing: 0.3px;
+}
+.cert-category-tag svg {
+    width: 12px;
+    height: 12px;
 }
 
 /* Skill chips */
@@ -535,7 +569,7 @@ footer { visibility: hidden; }
     66% { transform: translate(-20px, 30px); }
 }
 
-/* ─── Modal ─── */
+/* ─── Modal ── */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -587,7 +621,10 @@ footer { visibility: hidden; }
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1;
-    font-size: 1.1rem;
+}
+.modal-close svg {
+    width: 18px;
+    height: 18px;
 }
 .modal-close:hover {
     color: #f8fafc;
@@ -620,7 +657,10 @@ footer { visibility: hidden; }
     border-radius: 6px;
     border: 1px solid rgba(52,211,153,0.15);
 }
-.modal-verified i { font-size: 0.78rem; }
+.modal-verified svg {
+    width: 14px;
+    height: 14px;
+}
 .modal-title {
     color: #f1f5f9;
     font-size: clamp(1.15rem, 3vw, 1.45rem);
@@ -654,8 +694,9 @@ footer { visibility: hidden; }
     align-items: center;
     gap: 5px;
 }
-.modal-tag i {
-    font-size: 0.82rem;
+.modal-tag svg {
+    width: 14px;
+    height: 14px;
     opacity: 0.8;
 }
 .modal-detail-grid {
@@ -680,8 +721,11 @@ footer { visibility: hidden; }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
     flex-shrink: 0;
+}
+.modal-detail-icon svg {
+    width: 16px;
+    height: 16px;
 }
 .modal-detail-icon.blue { background: rgba(56,189,248,0.12); color: #38bdf8; }
 .modal-detail-icon.purple { background: rgba(99,102,241,0.12); color: #818cf8; }
@@ -720,6 +764,10 @@ footer { visibility: hidden; }
     position: relative;
     overflow: hidden;
 }
+.modal-btn svg {
+    width: 18px;
+    height: 18px;
+}
 .modal-btn::before {
     content: '';
     position: absolute;
@@ -737,7 +785,6 @@ footer { visibility: hidden; }
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(56,189,248,0.35);
 }
-.modal-btn i { font-size: 1.1rem; }
 
 /* ─── Scroll to top ─── */
 .scroll-top {
@@ -754,12 +801,15 @@ footer { visibility: hidden; }
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.2rem;
     border: 1px solid rgba(56,189,248,0.2);
     opacity: 0;
     transition: all 0.3s ease;
     z-index: 1000;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.scroll-top svg {
+    width: 20px;
+    height: 20px;
 }
 .scroll-top.visible { opacity: 1; }
 .scroll-top:hover {
@@ -788,7 +838,7 @@ footer { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Data ──
+# ── Data ─
 certs = [f"Assets/Cert/Cert{i}.png" for i in range(1, 6)]
 names = [
     "Introduction to Advanced Gen AI Tools",
@@ -799,10 +849,10 @@ names = [
 ]
 categories = ["Programming", "Web Dev", "Programming", "Cloud", "Design"]
 cat_icons = {
-    "Programming": "ri-code-s-slash-line",
-    "Web Dev": "ri-global-line",
-    "Cloud": "ri-cloud-line",
-    "Design": "ri-palette-line"
+    "Programming": "code",
+    "Web Dev": "globe",
+    "Cloud": "cloud",
+    "Design": "palette"
 }
 dates = ["Jan 2024", "Mar 2024", "May 2024", "Jul 2024", "Sep 2024"]
 issuers = ["Coursera", "Udemy", "freeCodeCamp", "AWS", "Google"]
@@ -829,14 +879,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Heading ──
-st.markdown("""
+st.markdown(f"""
 <div class="typing-wrapper">
     <div class="section-title-container">
-        <div class="section-icon"><i class="ri-award-line"></i></div>
+        <div class="section-icon">{svg_icon("award", 24)}</div>
         <div class="section-title">My Certifications</div>
     </div>
     <p class="subtitle-text">
-        <i class="ri-verified-badge-line"></i>
+        {svg_icon("verified", 18)}
         Verified achievements that reflect my learning journey
     </p>
     <div class="subtitle-divider"></div>
@@ -844,25 +894,25 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Stats ──
-st.markdown("""
+st.markdown(f"""
 <div class="stats-bar">
     <div class="stat-item">
-        <div class="stat-icon-wrap blue"><i class="ri-award-fill"></i></div>
+        <div class="stat-icon-wrap blue">{svg_icon("award", 20)}</div>
         <span class="stat-number" id="cnt-certs">0</span>
         <span class="stat-label">Certificates</span>
     </div>
     <div class="stat-item">
-        <div class="stat-icon-wrap purple"><i class="ri-building-2-line"></i></div>
+        <div class="stat-icon-wrap purple">{svg_icon("building", 20)}</div>
         <span class="stat-number" id="cnt-platforms">0</span>
         <span class="stat-label">Platforms</span>
     </div>
     <div class="stat-item">
-        <div class="stat-icon-wrap emerald"><i class="ri-lightbulb-flash-line"></i></div>
+        <div class="stat-icon-wrap emerald">{svg_icon("lightbulb", 20)}</div>
         <span class="stat-number" id="cnt-skills">0</span>
         <span class="stat-label">Skills Gained</span>
     </div>
     <div class="stat-item">
-        <div class="stat-icon-wrap amber"><i class="ri-time-line"></i></div>
+        <div class="stat-icon-wrap amber">{svg_icon("time", 20)}</div>
         <span class="stat-number" id="cnt-hours">0</span>
         <span class="stat-label">Hours Learned</span>
     </div>
@@ -870,27 +920,27 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Filter Buttons ──
-st.markdown("""
+st.markdown(f"""
 <div class="filter-section">
     <button class="filter-btn active" onclick="filterCerts('all', this)">
-        <i class="ri-apps-line"></i> All
+        {svg_icon("apps", 16)} All
     </button>
     <button class="filter-btn" onclick="filterCerts('Programming', this)">
-        <i class="ri-code-s-slash-line"></i> Programming
+        {svg_icon("code", 16)} Programming
     </button>
     <button class="filter-btn" onclick="filterCerts('Web Dev', this)">
-        <i class="ri-global-line"></i> Web Dev
+        {svg_icon("globe", 16)} Web Dev
     </button>
     <button class="filter-btn" onclick="filterCerts('Cloud', this)">
-        <i class="ri-cloud-line"></i> Cloud
+        {svg_icon("cloud", 16)} Cloud
     </button>
     <button class="filter-btn" onclick="filterCerts('Design', this)">
-        <i class="ri-palette-line"></i> Design
+        {svg_icon("palette", 16)} Design
     </button>
 </div>
 """, unsafe_allow_html=True)
 
-# ── Gallery ──
+# ── Gallery ─
 st.markdown('<div class="cert-gallery" id="certGallery">', unsafe_allow_html=True)
 
 for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
@@ -898,19 +948,19 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
 ):
     b64 = get_base64_image(path)
     if b64:
-        tags_html = "".join(f'<span class="modal-tag">{s}</span>' for s in skill_list)
+        tags_html = "".join(f'<span class="modal-tag">{svg_icon("tag", 14)}{s}</span>' for s in skill_list)
         skill_chips = "".join(f'<span class="skill-chip">{s}</span>' for s in skill_list[:3])
-        cat_icon = cat_icons.get(cat, "ri-bookmark-line")
+        cat_icon = cat_icons.get(cat, "code")
 
         st.markdown(f"""
         <div class="cert-item visible" data-category="{cat}"
              onclick="openModal({i})" style="--progress:{prog}%;">
-            <span class="cert-badge"><i class="ri-shield-check-line"></i> Verified</span>
+            <span class="cert-badge">{svg_icon("shield", 14)} Verified</span>
             <div class="cert-img-wrapper">
                 <img src="{b64}" class="cert-img" alt="{name}" loading="lazy">
                 <div class="cert-overlay">
                     <div class="overlay-icon-wrap">
-                        <i class="ri-eye-line"></i>
+                        {svg_icon("eye", 24)}
                     </div>
                     <span class="overlay-text">View Details</span>
                 </div>
@@ -919,11 +969,11 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
                 <h3>{name}</h3>
                 <div class="cert-meta">
                     <div class="cert-meta-left">
-                        <span><i class="ri-building-2-line"></i> {issuer}</span>
-                        <span><i class="ri-calendar-line"></i> {date}</span>
+                        <span>{svg_icon("building", 14)} {issuer}</span>
+                        <span>{svg_icon("calendar", 14)} {date}</span>
                     </div>
                     <span class="cert-category-tag">
-                        <i class="{cat_icon}"></i> {cat}
+                        {svg_icon(cat_icon, 12)} {cat}
                     </span>
                 </div>
                 <div class="skill-chips">{skill_chips}</div>
@@ -941,14 +991,14 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
 
         <!-- Modal {i} -->
         <div class="modal-overlay" id="modal{i}" onclick="closeModalOutside(event, {i})">
-            <div class="modal-box">
+            <div class="modal-box" onclick="event.stopPropagation()">
                 <button class="modal-close" onclick="closeModal({i})">
-                    <i class="ri-close-line"></i>
+                    {svg_icon("close", 18)}
                 </button>
                 <img src="{b64}" class="modal-cert-img" alt="{name}">
                 <div class="modal-header">
                     <span class="modal-verified">
-                        <i class="ri-shield-check-fill"></i> Verified
+                        {svg_icon("check", 14)} Verified
                     </span>
                 </div>
                 <div class="modal-title">{name}</div>
@@ -957,7 +1007,7 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
                 <div class="modal-detail-grid">
                     <div class="modal-detail-item">
                         <div class="modal-detail-icon blue">
-                            <i class="ri-building-2-line"></i>
+                            {svg_icon("building", 16)}
                         </div>
                         <div>
                             <span class="modal-detail-text">Issuer</span>
@@ -966,7 +1016,7 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
                     </div>
                     <div class="modal-detail-item">
                         <div class="modal-detail-icon purple">
-                            <i class="ri-calendar-event-line"></i>
+                            {svg_icon("calendar", 16)}
                         </div>
                         <div>
                             <span class="modal-detail-text">Date</span>
@@ -975,7 +1025,7 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
                     </div>
                     <div class="modal-detail-item">
                         <div class="modal-detail-icon emerald">
-                            <i class="ri-price-tag-3-line"></i>
+                            {svg_icon("tag", 16)}
                         </div>
                         <div>
                             <span class="modal-detail-text">Category</span>
@@ -984,7 +1034,7 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
                     </div>
                     <div class="modal-detail-item">
                         <div class="modal-detail-icon amber">
-                            <i class="ri-bar-chart-fill"></i>
+                            {svg_icon("chart", 16)}
                         </div>
                         <div>
                             <span class="modal-detail-text">Proficiency</span>
@@ -993,7 +1043,7 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
                     </div>
                 </div>
                 <button class="modal-btn">
-                    <i class="ri-download-2-line"></i>
+                    {svg_icon("download", 18)}
                     Download Certificate
                 </button>
             </div>
@@ -1003,10 +1053,10 @@ for i, (path, name, cat, date, issuer, skill_list, desc, prog) in enumerate(
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Scroll to Top ──
-st.markdown("""
+st.markdown(f"""
 <button class="scroll-top" id="scrollTopBtn"
-    onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <i class="ri-arrow-up-s-line"></i>
+    onclick="window.scrollTo({{top:0,behavior:'smooth'}})">
+    {svg_icon("arrow-up", 20)}
 </button>
 """, unsafe_allow_html=True)
 
@@ -1050,8 +1100,6 @@ function filterCerts(cat, btn) {
         card.style.transition = 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
         if (match) {
             card.style.display = '';
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px) scale(0.95)';
             setTimeout(() => {
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0) scale(1)';
@@ -1064,64 +1112,87 @@ function filterCerts(cat, btn) {
     });
 }
 
-// ── Modal ──
+// ── Modal Functions ──
 function openModal(i) {
     const modal = document.getElementById('modal' + i);
     if (modal) {
         modal.classList.add('open');
+        modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 }
+
 function closeModal(i) {
     const modal = document.getElementById('modal' + i);
     if (modal) {
         modal.classList.remove('open');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
         document.body.style.overflow = '';
     }
 }
+
 function closeModalOutside(e, i) {
-    if (e.target === document.getElementById('modal' + i)) closeModal(i);
+    const modal = document.getElementById('modal' + i);
+    if (e.target === modal) {
+        closeModal(i);
+    }
 }
-document.addEventListener('keydown', e => {
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay.open').forEach(m => {
-            m.classList.remove('open');
-            document.body.style.overflow = '';
+        document.querySelectorAll('.modal-overlay.open').forEach(function(modal) {
+            modal.classList.remove('open');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
         });
+        document.body.style.overflow = '';
     }
 });
 
 // ── Scroll to Top ──
-window.addEventListener('scroll', () => {
+window.addEventListener('scroll', function() {
     const btn = document.getElementById('scrollTopBtn');
-    if (btn) btn.classList.toggle('visible', window.scrollY > 300);
+    if (btn) {
+        if (window.scrollY > 300) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    }
 });
 
 // ── Progress bars on hover ──
-document.querySelectorAll('.cert-item').forEach(card => {
-    card.addEventListener('mouseenter', () => {
-        card.querySelectorAll('.progress-bar-fill').forEach(bar => {
+document.querySelectorAll('.cert-item').forEach(function(card) {
+    card.addEventListener('mouseenter', function() {
+        card.querySelectorAll('.progress-bar-fill').forEach(function(bar) {
             const prog = bar.style.getPropertyValue('--progress') ||
                          getComputedStyle(bar).getPropertyValue('--progress');
             bar.style.width = prog;
         });
     });
-    card.addEventListener('mouseleave', () => {
-        card.querySelectorAll('.progress-bar-fill').forEach(bar => {
+    card.addEventListener('mouseleave', function() {
+        card.querySelectorAll('.progress-bar-fill').forEach(function(bar) {
             bar.style.width = '0%';
         });
     });
 });
 
-// ── Intersection Observer ──
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+// ── Intersection Observer for animations ──
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
         if (entry.isIntersecting) {
             entry.target.style.opacity = '1';
             entry.target.style.transform = 'translateY(0)';
         }
     });
 }, { threshold: 0.1 });
-document.querySelectorAll('.cert-item').forEach(el => observer.observe(sel));
+
+document.querySelectorAll('.cert-item').forEach(function(el) {
+    observer.observe(el);
+});
 </script>
 """, unsafe_allow_html=True)
