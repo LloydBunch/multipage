@@ -382,8 +382,7 @@ body{ -webkit-font-smoothing:antialiased; overflow-x:hidden; }
 .fact-label{ font-size:0.80rem; color:var(--text-muted); font-weight:500; }
 
 /* ============================================================
-   TIMELINE — COMPLETELY REBUILT
-   Always visible, no JS dependency, pure CSS animations
+   TIMELINE — COMPLETELY REBUILT (FIXED MOBILE)
    ============================================================ */
 .tl-wrapper{
   position:relative;
@@ -708,34 +707,60 @@ body{ -webkit-font-smoothing:antialiased; overflow-x:hidden; }
 }
 
 /* ============================================================
-   MOBILE RESPONSIVE
+   MOBILE RESPONSIVE - FIXED ✅
    ============================================================ */
 @media (max-width:900px){
   .tl-wrapper::before{
-    left:24px;
+    left:28px;
   }
   .tl-row{
-    grid-template-columns:0 48px 1fr;
-    margin-bottom:40px;
+    grid-template-columns:48px 1fr;
+    margin-bottom:36px;
   }
-  .tl-left{ display:none; }
+  .tl-left{ display:none !important; }
+  
   .tl-right{
-    padding-left:16px;
+    padding-left:12px;
     justify-content:flex-start;
+    grid-column:2;
   }
+  
   .tl-centre{
-    padding-top:18px;
+    grid-column:1;
+    padding-top:12px;
     align-items:center;
+    margin-right:0;
   }
-  .tl-right .tl-card .tl-arrow{
-    left:-11px; top:24px;
+  
+  /* Hide arrow connectors on mobile */
+  .tl-card .tl-arrow{
+    display:none !important;
   }
-  .tl-card{ max-width:100%; }
-  .tl-badge{ font-size:0.78rem; padding:5px 13px; }
+  
+  /* Cards take full available width */
+  .tl-card{ 
+    max-width:100% !important;
+    margin:0;
+  }
+  
+  .tl-badge{ 
+    font-size:0.76rem; 
+    padding:5px 12px;
+    transform:translateX(-2px);
+  }
+  
+  .tl-dot{
+    width:16px; height:16px;
+    border-width:2px;
+  }
 }
 
 @media (max-width:768px){
-  .profile-section{ flex-direction:column; align-items:center; text-align:center; }
+  .profile-section{ 
+    flex-direction:column; 
+    align-items:center; 
+    text-align:center; 
+  }
   .profile-img-wrapper{ width:200px; }
   .profile-fallback{ width:200px; height:225px; }
   .profile-img-wrapper::before{ display:none; }
@@ -752,20 +777,30 @@ body{ -webkit-font-smoothing:antialiased; overflow-x:hidden; }
   .skills-grid{ grid-template-columns:1fr; }
   .typing-subtitle{
     animation:blink 0.85s step-end infinite;
-    max-width:480px !important;
+    max-width:100% !important;
     border-right:3px solid var(--primary);
+    white-space:normal;
   }
-  .page-title{ font-size:2rem; }
+  .page-title{ font-size:1.8rem; }
   .bio-description{ margin:0 auto 24px; }
+  
+  /* Additional timeline tweaks for very small screens */
+  .tl-wrapper{ padding:10px 0 20px; }
+  .tl-card{ padding:20px 18px; }
+  .tl-title{ font-size:1rem; }
+  .tl-desc{ font-size:0.86rem; }
 }
 
 @media (max-width:480px){
-  .facts-grid{ grid-template-columns:repeat(2,1fr); gap:13px; }
+  .facts-grid{ grid-template-columns:repeat(2,1fr); gap:12px; }
   .profile-section{ margin:28px 0 8px; gap:22px; }
-  .profile-img-wrapper{ width:170px; }
-  .profile-fallback{ width:170px; height:190px; }
-  .interest-chip{ padding:9px 15px; font-size:0.83rem; }
-  .tl-card{ padding:20px 18px; }
+  .profile-img-wrapper{ width:160px; }
+  .profile-fallback{ width:160px; height:180px; }
+  .interest-chip{ padding:9px 14px; font-size:0.8rem; }
+  .tl-card{ padding:18px 16px; }
+  .tl-badge{ font-size:0.72rem; padding:4px 10px; }
+  .tl-dot{ width:14px; height:14px; }
+  .tl-wrapper::before{ left:24px; width:2px; }
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -774,12 +809,17 @@ body{ -webkit-font-smoothing:antialiased; overflow-x:hidden; }
     animation-iteration-count:1 !important;
     transition-duration:0.01ms !important;
   }
-  .typing-subtitle{ max-width:620px !important; border-right:none !important; }
+  .typing-subtitle{ 
+    max-width:100% !important; 
+    border-right:none !important;
+    white-space:normal !important;
+  }
   .tl-wrapper::before{ animation:none; height:100%; }
   .skill-bar-fill{ animation:none !important; }
 }
 @media (hover:none) and (pointer:coarse){
   .interest-chip,.bio-chip{ min-height:46px; }
+  .tl-card:hover{ transform:none !important; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -941,8 +981,7 @@ facts_html = "".join(f"""
 st.markdown(f'<div class="facts-grid">{facts_html}</div>', unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────
-# TIMELINE — REBUILT WITH GRID LAYOUT (no JS dependency)
-# Alternates: odd rows → card on LEFT, even rows → card on RIGHT
+# TIMELINE — REBUILT WITH GRID LAYOUT (FIXED MOBILE)
 # ─────────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 st.markdown('<div class="section-label">My Journey</div>', unsafe_allow_html=True)
@@ -953,14 +992,14 @@ journey = [
         "title": "The Beginning",
         "desc": "Started my Computer Science degree with zero prior experience. Built my first program in Python and immediately fell in love with the logical elegance of programming and problem-solving.",
         "tags": ["Python Basics", "CS Fundamentals", "Logic Building"],
-        "side": "left"   # card appears on left
+        "side": "left"
     },
     {
         "year": "2024", "icon": "zap",
         "title": "Exploration & Growth",
         "desc": "Dived deep into web development — mastered HTML, CSS, and JavaScript. Collaborated on academic group projects, learned version control with Git, and attended my first tech hackathon.",
         "tags": ["HTML/CSS/JS", "Git & GitHub", "Hackathon", "Teamwork"],
-        "side": "right"  # card appears on right
+        "side": "right"
     },
     {
         "year": "2025", "icon": "target",
